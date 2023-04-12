@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -296,24 +295,28 @@ nav ul ul {
 <!--    <form action="./delete/" method="POST">-->
 
     <div id="block1">
-        <button onclick = "SaveChanges()" id = 'save_change' style = 'visibility: hidden' class="dip">Сохранить Изменения</button>
+        <button onclick = "SaveChanges()" style = 'visibility: hidden' class="dip">Сохранить Изменения</button>
     <table>
 
             <th style="width: 40px">id</th>
-            <th style="width: 200px">Название</th>
-            <th>Адрес</th>
-            <th>Холдинг</th>
+            <th style="width: 200px">Кабинет</th>
+            <th>Инв Номер</th>
+            <th>Имущество</th>
+            <th>Кол-во</th>
+            <th>Описание</th>
             <th style="color: red; visibility: hidden" class="dip">Удалить</th>
             <th style="color: red; visibility: hidden; width: 200px" class="dip">Изменить</th>
         </tr>
-        {% for organization in organizations %}
+        {% for invent_list in invent_lists %}
         <tr>
-            <th><a class = "btn" onclick=handleClick(this) style="color: black" href='../department/?organization_id={{organization.pk}}'><span>{{organization.pk}}</span></a></th>
-            <th><a class = "btn {{organization.pk}}" onclick=handleClick(this) style="color: black" href='../department/?organization_id={{organization.pk}}'><span>{{organization.name}}</span></a></th>
-            <th><a class = "{{organization.pk}}">{{organization.address}}</a></th>
-            <th><a class = "btn {{organization.pk}}" onclick=handleClick(this) style="color: black" href='../holding/{{organization.holding.pk}}'><span>{{organization.holding}}</span></a></th>
-            <th style = 'visibility: hidden; width: 80px; height: 38px; text-align: center' class="dip"><input style="text-align: center; width: 20px; height: 20px; align-content: center; align-self: center" name="{{organization.pk}}" id="{{organization.pk}}" type="checkbox"></th>
-            <th style='visibility: hidden; text-align: center' class="dip"><input type="button" onclick="editable_field(this, '{{organization.pk}}')" value="Изменить"></th>
+            <th><a class = "btn" onclick=handleClick(this) style="color: black" href='../department/?organization_id={{invent_list.pk}}'><span>{{invent_list.pk}}</span></a></th>
+            <th><a class = "btn {{invent_list.pk}}" onclick=handleClick(this) style="color: black" href='../department/{{invent_list.MOL.department.id}}'><span>{{invent_list.MOL.department.cabinet}}</span></a></th>
+            <th><a class = "{{invent_list.pk}}">{{invent_list.invent_num}}</a></th>
+            <th><a class = "btn {{invent_list.pk}}" onclick=handleClick(this) style="color: black" href='../property/{{invent_list.property.id}}'><span>{{invent_list.property}}</span></a></th>
+            <th><a class = "{{invent_list.pk}}">{{invent_list.amount}}</a></th>
+            <th><a class = "{{invent_list.pk}}">{{invent_list.description}}</a></th>
+            <th style = 'visibility: hidden; width: 80px; height: 38px; text-align: center' class="dip"><input style="text-align: center; width: 20px; height: 20px; align-content: center; align-self: center" name="  {{invent_list.pk}}" id="{{invent_list.pk}}" type="checkbox"></th>
+            <th style='visibility: hidden; text-align: center' class="dip"><input type="button" onclick="editable_field(this, '{{invent_list.pk}}')" value="Изменить"></th>
         </tr>
         {% endfor %}
 
@@ -356,7 +359,7 @@ nav ul ul {
                 from.style.visibility = 'hidden'
                 insertAfter(confirm_button, cancel_button)
 
-                for (let step = 0; step < 3; step++){
+                for (let step = 0; step < 5; step++){
                 var e = document.getElementsByClassName(el)[0];
 
 
@@ -366,8 +369,18 @@ nav ul ul {
                 d.value = e.textContent;
                 d.placeholder = e.textContent;
                 d.className = el + 'textfield'
-
                 e.parentNode.replaceChild(d, e);
+
+                    if (step === 1){
+                        d.type = 'select'
+                        {% for property in properties %}
+                        const option = new Option('{{property.name}}', '{{property.id}}')
+                        d.add(option, undefined)
+                        {% endfor %}
+                    }
+
+
+
                 }
 
 
@@ -382,14 +395,14 @@ nav ul ul {
                 const can_con = Array.from(document.getElementsByClassName(d));
                 can_con.forEach(box => {
                     box.remove();
-});
+            });
                 // can_con[0].remove()
                 // can_con[1].remove()
             }
 
             function DiscardChanges(classname){
 
-                for (let step = 0; step < 3; step++){
+                for (let step = 0; step < 5; step++){
                     var d = document.getElementsByClassName(classname+'textfield')[0];
                     var e = document.createElement('a');
                     e.className = "btn " + classname
@@ -409,14 +422,16 @@ nav ul ul {
                     var element = document.getElementsByClassName(el+'textfield');
 
                     const dict = {'id': el,
-                        name: element[0].value,
-                        address: element[1].value,
-                        holding: element[2].value
+                        cabinet: element[0].value,
+                        inv_num: element[1].value,
+                        property_name: element[2].value,
+                        amount: element[3].value,
+                        description: element[4].value
                     }
                     submit.push(dict)
                     // window.alert(submit[0].get('name'))
 
-                for (let step = 0; step < 3; step++){
+                for (let step = 0; step < 5; step++){
                     var d = document.getElementsByClassName(el+'textfield')[0];
                     var e = document.createElement('a');
                     e.className = "btn " + el
@@ -429,13 +444,12 @@ nav ul ul {
                     ChangeButtonReturn(el);
                 }
 
-    //         var flag = false
-    //
-    //                 // document.write(submit.get('name'), submit.get('address'), submit.get('holding'));
             function PageReload() {
                 // if (flag)
                 window.location.href = '.'
     }
+
+                    // document.write(submit.get('name'), submit.get('address'), submit.get('holding'));
 
 
 
@@ -443,22 +457,18 @@ nav ul ul {
             // window.alert(submit)
 
             var xhr = new XMLHttpRequest();
-            xhr.open("POST", 'http://127.0.0.1:8000/organization/update/', true);
+            xhr.open("POST", 'http://127.0.0.1:8000/inner/update/', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(submit));
-
             const elements = document.querySelectorAll('input[type=checkbox]:checked')
-
-            xhr.addEventListener("loadend", PageReload)
 
             var xhr1_list = []
 
             elements.forEach(element =>{
                 xhr1_list.push(element.id)
-
             })
-                // flag = true
-                // console.log('123')
+
+            xhr.addEventListener("loadend", PageReload)
 
             // var xhr1 = new XMLHttpRequest();
             // xhr1.open("POST", 'http://127.0.0.1:8000/organization/delete/', true);
@@ -467,8 +477,6 @@ nav ul ul {
 
             //    TODO Опасное место может набнутся
             }
-
-            // document.getElementById('save_change').addEventListener('click', PageReload)
 
             function None(button){
                 button.onclick.disabled = true

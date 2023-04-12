@@ -28,7 +28,7 @@ class PropertyAdmin(admin.ModelAdmin):
 
 
 class InventoryListAdmin(admin.ModelAdmin):
-    list_display = ("invent_num", "serial_num", "amount", "account_date", "MOL", "property")
+    list_display = ("invent_num", "serial_num", "amount", "account_date", "MOL", "property", "description")
     search_fields = ("invent_num",)
 
 

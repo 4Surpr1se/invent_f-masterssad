@@ -74,10 +74,10 @@ class OrganizationDelete(CreateAPIView):
             # print(request.data)
             i.is_deleted = True
             i.save()
-        if request.META.get('HTTP_REFERER') is not None and request.META.get('HTTP_REFERER').split('?')[0] == 'http://127.0.0.1:8000/organization/':  # TODO убрать отношение к МЕТА данным
-            return redirect("http://127.0.0.1:8000/organization/?success_update=True")
-        else:
-            return Response(request.data)
+        # if request.META.get('HTTP_REFERER') is not None and request.META.get('HTTP_REFERER').split('?')[0] == 'http://127.0.0.1:8000/organization/':  # TODO убрать отношение к МЕТА данным
+        #     return redirect("http://127.0.0.1:8000/organization/?success_update=True")
+        # else:
+        #     return Response(request.data)
 
 
 class OrganizationUpdate(CreateAPIView):
@@ -86,10 +86,10 @@ class OrganizationUpdate(CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         # print(request.data)
-        for organization_line in request.data:
-            obj = Organization.objects.get(pk=organization_line['id'])
-            obj.name = organization_line['name']
-            obj.address = organization_line['address']
+        for organization_row in request.data:
+            obj = Organization.objects.get(pk=organization_row['id'])
+            obj.name = organization_row['name']
+            obj.address = organization_row['address'] # TODO через сериализатор можно или **
             # obj.holding = organization_line['holding']
 
             obj.save()
@@ -135,6 +135,8 @@ class DepartmentList(ListAPIView):
             queryset = Department.objects.filter(name__contains=query_name)  # TODO МБ ПОЛУЧШЕ РЕШЕНИЕ ЕСТЬ
         if query_org_id := request.query_params.get('organization_id'):
             queryset = Department.objects.filter(organization__id=query_org_id)
+        # if query_cabinet := request.query_params.get('cabinet'):
+        #     queryset = Department.
         organization_queryset = Organization.objects.all()  # TODO мб придется переделывать,/
                                                   #  потому что 2 кверисета в одной вьюшке такое себе,/
                                                   #  либо не все поля возвращать
@@ -205,9 +207,53 @@ class HoldingCreate(CreateAPIView):
         else:
             return holding
 
-    script()
+    # script()
 
 # class FixtureCreate(CreateAPIView):
 #     def post (self, request, *args, **kwargs):
 #
 
+
+class Inner(ListAPIView):
+    queryset = Department.objects.all()
+    model = Department
+    serializer_class = DepartmentSerializer
+    renderer_classes = [TemplateHTMLRenderer]
+
+    def list(self, request, *args, **kwargs):
+
+        queryset = InventoryList.objects.all()
+        if query_name := request.query_params.get('search'):
+            queryset = InventoryList.objects.filter(MOL__department__cabinet__contains=query_name)
+          # TODO мб придется переделывать,/
+        properties = Property.objects.all()
+                                                  #  потому что 2 кверисета в одной вьюшке такое себе,/
+                                                  #  либо не все поля возвращать
+
+        return Response({'invent_lists': queryset, 'properties': properties,
+                         'success_create': bool(request.query_params.get('success_create'))},  # TODO переделать
+                        template_name='handler.html')
+
+
+class InnerUpdate(CreateAPIView):
+    model = InventoryList
+    serializer_class = OrganizationSerializer
+
+    def post(self, request, *args, **kwargs):
+        print(request.data)
+        for inv_row in request.data:
+            print(inv_row)
+            obj = InventoryList.objects.get(pk=inv_row['id'])
+            obj.MOL.department.cabinet = inv_row['cabinet']
+            obj.invent_num = inv_row['inv_num']
+
+            prop = Property.objects.get(pk=obj.property.id)
+            prop.name = inv_row['property_name']
+            prop.save()
+
+            obj.amount = inv_row['amount']
+            obj.description = inv_row['description']
+            obj.save()
+            print(obj)
+
+        return Response(request.data)

@@ -52,12 +52,13 @@ class Property(models.Model):
 
 
 class InventoryList(models.Model):
-    invent_num = models.CharField(verbose_name='Ивентарный номер', max_length=255)
+    invent_num = models.CharField(verbose_name='Ивентарный номер', max_length=255, default='Отсутствует')
     serial_num = models.CharField(verbose_name='Серийный номер', max_length=255)
-    amount = models.DecimalField(decimal_places=3, max_digits=30)  # переделать на другой тайп филд
-    account_date = models.DateTimeField(verbose_name='аккаунт_дата')
+    amount = models.IntegerField(verbose_name='Количество')  # переделать на другой тайп филд
+    account_date = models.DateTimeField(verbose_name='аккаунт_дата', null=True)
     MOL = models.ForeignKey(MOL, verbose_name='МОЛ', on_delete=models.PROTECT)
     property = models.ForeignKey(Property, verbose_name='Имущество', on_delete=models.PROTECT)
+    description = models.CharField(verbose_name='Описание', max_length=255, default='')
 
     def __str__(self):
         return self.invent_num
