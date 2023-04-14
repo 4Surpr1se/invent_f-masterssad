@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from core.models import Organization, Holding, Department
+from core.models import Organization, Holding, Department, Property
 
 
 class OrganizationSerializer(serializers.ModelSerializer):
@@ -59,6 +59,13 @@ class HoldingCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Holding
+        fields = '__all__'
+
+
+class PropertySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Property
         fields = '__all__'
 
     # def create(self, validated_data):

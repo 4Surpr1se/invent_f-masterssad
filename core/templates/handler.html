@@ -191,6 +191,101 @@ nav ul ul {
         background: rgba(19, 20, 123, 0.67);
       }
 
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    /* Modal Content */
+    .modal-content {
+        background-color: #fefefe;
+        margin: auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 15%;
+        height: 30%;
+        text-align: center;
+        align-content: center;
+    }
+
+    /* The Close Button */
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    .labelcls {
+        font-family: 'Lucida Console';
+}
+
+    .inputcls {
+        width: 90%;
+        height: 23px
+}
+    .button-6 {
+        align-items: center;
+        background-color: #FFFFFF;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        border-radius: .25rem;
+        box-shadow: rgba(0, 0, 0, 0.02) 0 1px 3px 0;
+        box-sizing: border-box;
+        color: rgba(0, 0, 0, 0.85);
+        cursor: pointer;
+        display: inline-flex;
+        font-family: system-ui,-apple-system,system-ui,"Helvetica Neue",Helvetica,Arial,sans-serif;
+        font-size: 16px;
+        font-weight: 600;
+        justify-content: center;
+        line-height: 1.25;
+        margin: 0;
+        min-height: 3rem;
+        padding: calc(.875rem - 1px) calc(1.5rem - 1px);
+        position: relative;
+        text-decoration: none;
+        transition: all 250ms;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: manipulation;
+        vertical-align: baseline;
+        width: auto;
+        }
+
+    .button-6:hover,
+    .button-6:focus {
+        border-color: rgba(0, 0, 0, 0.15);
+        box-shadow: rgba(0, 0, 0, 0.1) 0 4px 12px;
+        color: rgba(0, 0, 0, 0.65);
+}
+
+    .button-6:hover {
+        transform: translateY(-1px);
+}
+
+    .button-6:active {
+        background-color: #F0F0F1;
+        border-color: rgba(0, 0, 0, 0.15);
+        box-shadow: rgba(0, 0, 0, 0.06) 0 2px 4px;
+        color: rgba(0, 0, 0, 0.65);
+        transform: translateY(0);
+}
+
     </style>
 
         <meta charset="UTF-8">
@@ -288,9 +383,38 @@ nav ul ul {
    <p style="height: 30px"><input type="search" name="search" id="searchfield" placeholder="Поиск по названию">
    <input type="submit" style="float: left" value="Найти">
         </form>
-    <button style="
-    width: 120px;
+    <button class = button-6 style="
+    width: 150px;
     height: 40px;" onclick="show()">Режим редактирования</button></p>
+
+    <!-- The Modal -->
+<div id="myModal" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <span class="close">&times;</span>
+<!--    <form style = 'padding-top: 10%' action = false onclick="PropertyAdd()" method="POST" >-->
+  <div>
+    <label class = labelcls for="property_name">Наименование имущества</label><br>
+    <input class = inputcls name="property_name" id="property_name"/>
+  </div>
+  <div>
+    <label class = labelcls for="u_m">Единица измерения</label><br>
+    <input class = inputcls name="u_m" id="u_m" />
+  </div>
+  <div>
+      <label class = labelcls for="description">Описание</label><br>
+    <input class = inputcls name="description" id="description" />
+  </div>
+  <div>
+      <br>
+    <button class="button-6" onclick="PropertyAdd()" role="button" style="padding: 15px 32px;">Добавить организацию</button>
+      </div>
+
+<!--</form>-->
+  </div>
+
+</div>
 
 <!--    <form action="./delete/" method="POST">-->
 
@@ -332,10 +456,8 @@ nav ul ul {
   a.style.visibility = 'visible'})
 }
             function editable_field(from, el) {
-                // from.style.color = 'black'
-                // from.value = 'Подтвердить'
-                // from.onclick.disabled = true
                 from.id = el + 'changebutton'
+
                 var confirm_button = document.createElement("input")
                 confirm_button.type = 'button'
                 confirm_button.value = 'Подтвердить'
@@ -351,9 +473,6 @@ nav ul ul {
 
                 cancel_button.className = el + 'can_con'
 
-                // from.innerHTML = confirm_button.innerHTML
-
-
 
                 from.parentNode.replaceChildren(confirm_button, from)
                 from.style.visibility = 'hidden'
@@ -362,30 +481,90 @@ nav ul ul {
                 for (let step = 0; step < 5; step++){
                 var e = document.getElementsByClassName(el)[0];
 
+                if (step === 2){
+                        var d = document.createElement('select');
+                        d.style = 'align-self: center; width: 150px; height: 20px'
 
-                var d = document.createElement('input');
-                d.type = 'text'
-                d.innerHTML = e.innerHTML
-                d.value = e.textContent;
-                d.placeholder = e.textContent;
-                d.className = el + 'textfield'
-                e.parentNode.replaceChild(d, e);
+                        var svg_image = document.createElement('svg');
+                        svg_image.innerHTML = '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="-5 -5 60.00 60.00" xml:space="preserve" width="25px" height="25px" fill="#000000" transform="matrix(1, 0, 0, 1, 0, 0)rotate(0)"><g id="SVGRepo_bgCarrier" stroke-width="0" transform="translate(0,0), scale(1)"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" stroke="#CCCCCC" stroke-width="1.4000000000000001"></g><g id="SVGRepo_iconCarrier"> <circle style="fill:#43B05C;" cx="25" cy="25" r="25"></circle> <line style="fill:none;stroke:#FFFFFF;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" x1="25" y1="13" x2="25" y2="38"></line> <line style="fill:none;stroke:#FFFFFF;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;" x1="37.5" y1="25" x2="12.5" y2="25"></line> </g></svg>'
+                        svg_image.style = 'align-self: center; cursor: pointer; align-content: center'
+                        svg_image.setAttribute('onclick', `CreateProperty()`)
+                        d.className = el + 'textfield' + ' property_select'
 
-                    if (step === 1){
-                        d.type = 'select'
                         {% for property in properties %}
-                        const option = new Option('{{property.name}}', '{{property.id}}')
-                        d.add(option, undefined)
+
+                        var option = document.createElement("option");
+                        option.value = '{{property.id}}';
+                        option.text = '{{property.name}}';
+                        if (option.text === e.textContent){
+                            option.selected = true}
+                        d.appendChild(option);
+
                         {% endfor %}
+
+                        e.parentNode.replaceChild(d, e);
+                        d.after(svg_image)
                     }
-
-
-
+                else {
+                    var d = document.createElement('input');
+                    d.type = 'text'
+                    d.innerHTML = e.innerHTML
+                    d.value = e.textContent;
+                    d.placeholder = e.textContent;
+                    d.className = el + 'textfield'
+                    e.parentNode.replaceChild(d, e);
                 }
 
-
-
+                }
             }
+            function CreateProperty(){
+                // Get the modal
+                var modal = document.getElementById("myModal");
+
+                // Get the <span> element that closes the modal
+                var span = document.getElementsByClassName("close")[0];
+
+                // When the user clicks the button, open the modal
+                  modal.style.display = "block";
+
+
+                // When the user clicks on <span> (x), close the modal
+                span.onclick = function() {
+                  modal.style.display = "none";
+                }
+
+                // When the user clicks anywhere outside of the modal, close it
+                window.onclick = function(event) {
+                  if (event.target == modal) {
+                    modal.style.display = "none";
+                  }
+                }
+            }
+
+            function PropertyAdd(){
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", 'http://127.0.0.1:8000/inner/create/', true);
+                xhr.setRequestHeader('Content-Type', 'application/json');
+
+                let name = document.getElementById('property_name')[0]
+                let u_m = document.getElementById('u_m')[0]
+                let description = document.getElementById('description')[0]
+
+                var dict = {
+                    'name': name.textContent,
+                    'u_m': u_m.textContent,
+                    'description': description.textContent
+                }
+
+                xhr.send(JSON.stringify(dict));
+
+
+                // var property_select = document.getElementsByClassName('property_select')[0]
+                // var option = document.createElement("option");
+                // option.value = JSON.parse(xhr.response)['id']
+                // option.text = name.textContent
+                // property_select.appendChild(option)
+    }
 
             function ChangeButtonReturn(el){
                 var from = document.getElementById(el + 'changebutton')
@@ -424,7 +603,8 @@ nav ul ul {
                     const dict = {'id': el,
                         cabinet: element[0].value,
                         inv_num: element[1].value,
-                        property_name: element[2].value,
+                        property_id: element[2].value,
+                        property_name: element[2].options[element[2].selectedIndex].text,
                         amount: element[3].value,
                         description: element[4].value
                     }
@@ -438,6 +618,9 @@ nav ul ul {
                     e.setAttribute('onclick', 'handleClick(this)')
                     e.style.color = 'black'
                     e.textContent = d.value
+                    if (step === 2 ) {
+                        e.textContent = d.options[d.selectedIndex].text
+                    }
                     // TODO доделать href
                     d.parentNode.replaceChild(e, d);
                 }

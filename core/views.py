@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
 from core.serializer import OrganizationSerializer, OrganizationCreateSerializer, DepartmentSerializer, \
-    DepartmentCreateSerializer, HoldingCreateSerializer, HoldingSerializer
+    DepartmentCreateSerializer, HoldingCreateSerializer, HoldingSerializer, PropertySerializer
 from .fixture import script
 from .models import Holding, Organization, Department, MOL, Property, InventoryList
 
@@ -226,7 +226,7 @@ class Inner(ListAPIView):
         if query_name := request.query_params.get('search'):
             queryset = InventoryList.objects.filter(MOL__department__cabinet__contains=query_name)
           # TODO мб придется переделывать,/
-        properties = Property.objects.all()
+        properties = Property.objects.all().order_by('name')
                                                   #  потому что 2 кверисета в одной вьюшке такое себе,/
                                                   #  либо не все поля возвращать
 
@@ -246,10 +246,11 @@ class InnerUpdate(CreateAPIView):
             obj = InventoryList.objects.get(pk=inv_row['id'])
             obj.MOL.department.cabinet = inv_row['cabinet']
             obj.invent_num = inv_row['inv_num']
+            obj.property = Property.objects.get(pk=inv_row['property_id'])
 
-            prop = Property.objects.get(pk=obj.property.id)
-            prop.name = inv_row['property_name']
-            prop.save()
+            # prop = Property.objects.get(pk=obj.property.id)
+            # prop.name = inv_row['property_name']
+            # prop.save()
 
             obj.amount = inv_row['amount']
             obj.description = inv_row['description']
@@ -257,3 +258,9 @@ class InnerUpdate(CreateAPIView):
             print(obj)
 
         return Response(request.data)
+
+
+class PropertyCreate(CreateAPIView):
+    queryset = Property.objects.all()
+    model = Property
+    serializer_class = PropertySerializer

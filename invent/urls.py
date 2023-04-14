@@ -20,7 +20,7 @@ from rest_framework import routers
 from core import views
 from core.views import OrganizationRetrieve, OrganizationList, OrganizationCreate, DepartmentRetrieve, DepartmentList, \
     DepartmentCreate, HoldingRetrieve, HoldingList, HoldingCreate, OrganizationDelete, OrganizationUpdate, Inner, \
-    InnerUpdate
+    InnerUpdate, PropertyCreate
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -36,6 +36,8 @@ urlpatterns = [
     path('organization/delete/', OrganizationDelete.as_view()),
     path('organization/update/', OrganizationUpdate.as_view()),
     path('inner/', Inner.as_view()),
-    path('inner/update/', InnerUpdate.as_view())
+    path('inner/update/', InnerUpdate.as_view()),
+    path('inner/create/', PropertyCreate.as_view()),
+
 ]
 
